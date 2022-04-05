@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BiCiMon</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <script src="https://unpkg.com/alpinejs@3.9.5/dist/cdn.min.js" defer
+            integrity="sha384-uvrjP84ugVTfHtrnvF3/rM9lWkcO9x7yPo/Pnr9JjHbWjj6dbv5aL1Wmsu6HadlI"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+          integrity="sha384-IJLmUY0f1ePPX6uSCJ9Bxik64/meJmjSYD7dHaJqTXXEBE4y+Oe9P2KBZa/z7p0Q" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="mobile-web-app-status-bar-style" content="black"/>
+    <meta name="mobile-web-app-title" content="BiCiMon">
+    <meta name="theme-color" content="#2A3443"/>
+    <meta name="description" content="Bike Speedometer">
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+<div class="container" x-data="main">
+    <div class="notification is-danger m-1" x-show="error" x-transition>
+        <span x-text="error"></span>
+        <button class="delete" @click="error = ''"></button>
+    </div>
+    <nav class="tabs is-boxed pb-3 mb-0" style="top: 0; padding-top: 3px; position: sticky; background: white">
+        <ul>
+            <li x-bind:class="page === 'dashboard' ? 'is-active' : ''" style="margin-left: 1rem"
+                @click="page = 'dashboard'">
+                <a>Dashboard</a>
+            </li>
+            <li x-bind:class="page === 'course' ? 'is-active' : ''" @click="page = 'course'">
+                <a>Course</a>
+            </li>
+            <li style="margin-left: auto; margin-right: 1rem" x-show="heading">
+                <span>🧭</span> <span x-text="fmtHeading()"></span>
+            </li>
+        </ul>
+    </nav>
+
+    <div x-show="page === 'dashboard'" x-transition>
+        <template x-if="!time.update">
+            <div>
+                <div class="has-text-centered">Awaiting geolocation ...</div>
+                <progress class="progress is-small is-dark" max="100"></progress>
+            </div>
+        </template>
+        <div class="has-text-centered">
+            <div>
+                <div class="title" style="font-size: 15rem; color: black; margin-bottom: 0; line-height: .8"
+                     x-text="fmtCurrentSpeed()"></div>
+                <div class="heading" style="font-weight: bold">
+                    km/h <span style="font-weight: normal; text-transform: initial"
+                               x-show="time.updateDelay !== null">&mdash;
+                        <span x-text="fmtUpdateDelay()"></span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="level is-mobile dark-bg">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">🏔 Altitude</p>
+                    <p class="title">
+                        <span x-text="round(altitude.current)"></span><small>±<span
+                            x-text="round(altitude.accuracy)"></span>m</small>
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">📍 Accuracy</p>
+                    <p class="title">
+                        <small>±</small><span x-text="round(positionAccuracy)"></span><small>m</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="level is-mobile">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">🚴 Max</p>
+                    <p class="title" x-text="fmtMaxSpeed()"></p>
+                    <p class="heading">km/h</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Ø Avg</p>
+                    <p class="title" x-text="fmtAvgSpeed()"></p>
+                    <p class="heading">km/h</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">⌛ Avg-Wait</p>
+                    <p class="title" x-text="fmtAvgNoWaitSpeed()"></p>
+                    <p class="heading">km/h</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="level is-mobile dark-bg">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">⌚ Start</p>
+                    <p class="title" x-text="fmtStartTime()"></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">⏱ Trip</p>
+                    <p class="title" x-text="fmtTripTime()"></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">⌛ Wait</p>
+                    <p class="title" x-text="fmtWaitTime()"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <template x-if="page === 'course'">
+        <div class="mx-1 mb-5">
+            <div class="is-flex is-justify-content-space-between px-2 scale">
+                <span>0
+                    <math class="formula">
+                        <mfrac>
+                            <mn>km</mn>
+                            <mn>h</mn>
+                        </mfrac>
+                    </math>
+                </span>
+                <span>
+                    <span x-text="fmtMaxSpeed()"></span>
+                    <math class="formula">
+                        <mfrac>
+                            <mn>km</mn>
+                            <mn>h</mn>
+                        </mfrac>
+                    </math>
+                </span>
+            </div>
+            <template x-for="(sp, idx) in speed.timeseries.values">
+                <div>
+                    <div
+                            :class="{'has-background-danger': sp < speed.minRide, 'has-background-dark': sp >= speed.minRide}"
+                            :style="{width: (sp * 100 / speed.max) + '%', height: clamp(1000 / speed.timeseries.values.length, 1, 10) + 'px'}">
+                    </div>
+                </div>
+            </template>
+        </div>
+    </template>
+</div>
+
+<script src="./index.js"></script>
+</body>
+</html>

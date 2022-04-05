@@ -1,0 +1,27 @@
+.level {
+    border-top-color: #dbdbdb;
+    border-top-style: solid;
+    border-top-width: 1px;
+    padding-top: .75rem;
+    padding-bottom: .5rem;
+    margin-bottom: 0 !important;
+}
+
+.level.dark-bg {
+    background: #0001;
+}
+
+.level-item .title small {
+    font-size: 60%;
+}
+
+math.formula {
+    font-family: sans-serif;
+    font-size: x-small;
+}
+
+.scale {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid #ccc;
+}
