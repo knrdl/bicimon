@@ -110,10 +110,6 @@ document.addEventListener('alpine:init', () => {
                 }, 1000)
 
                 navigator.geolocation.watchPosition(({timestamp, coords}) => {
-                    if (!this.noSleep) {
-                        this.noSleep = new NoSleep()
-                        this.noSleep.enable()
-                    }
                     this.time.update = timestamp
                     this.speed.current = coords.speed * 3.6  // m/s to km/h
                     if (!this.speed.max || this.speed.current > this.speed.max) this.speed.max = this.speed.current
@@ -161,6 +157,15 @@ document.addEventListener('alpine:init', () => {
         },
         clamp(value, min, max) {
             return Math.min(Math.max(value, min), max)
+        },
+        toggleNoSleep() {
+            if (this.noSleep) {
+                this.noSleep.disable()
+                this.noSleep = null
+            } else {
+                this.noSleep = new NoSleep()
+                this.noSleep.enable()
+            }
         }
     }))
 })
